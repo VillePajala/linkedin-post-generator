@@ -241,7 +241,13 @@ LINKEDIN ALGORITHM OPTIMIZATION:
 
 Write a LinkedIn post draft that matches the style guide precisely. The post should feel authentic and natural, as if written by the person whose style you're emulating.
 
-Output ONLY the post content, nothing else."""
+After the post content, add a separator line and suggest an image that would complement the post.
+
+Format your output as:
+[POST CONTENT]
+
+---IMAGE SUGGESTION---
+[Brief description of what image/visual would work well with this post]"""
 
     return prompt
 
@@ -297,7 +303,15 @@ POST REQUIREMENTS:
 - Match the style guide precisely
 - Keep the post authentic and natural
 
-Write a LinkedIn post draft that explores a new angle within this topic. Output ONLY the post content, nothing else."""
+Write a LinkedIn post draft that explores a new angle within this topic.
+
+After the post content, add a separator line and suggest an image that would complement the post.
+
+Format your output as:
+[POST CONTENT]
+
+---IMAGE SUGGESTION---
+[Brief description of what image/visual would work well with this post]"""
 
     return prompt
 
