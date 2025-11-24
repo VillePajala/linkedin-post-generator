@@ -53,6 +53,56 @@ def list_contexts(contexts_dir):
     context_files = list(contexts_path.glob("*.yaml"))
     return [f.stem for f in context_files]
 
+def get_variant_styles():
+    """Return different variant styles for A/B testing"""
+    return [
+        {
+            'name': 'Story-Driven',
+            'description': """
+OPENING: Start with a personal anecdote or specific story
+STRUCTURE: Narrative arc with setup, conflict, resolution
+HOOK: "Last week..." or "I just realized..." or specific moment
+CTA: Invite readers to share their own stories
+TONE: Personal, relatable, conversational"""
+        },
+        {
+            'name': 'Data & Insights',
+            'description': """
+OPENING: Lead with a surprising statistic, number, or insight
+STRUCTURE: Problem → Data → Analysis → Conclusion
+HOOK: Bold statement backed by evidence
+CTA: Ask for agreement/disagreement with the analysis
+TONE: Analytical, thought-provoking, authoritative"""
+        },
+        {
+            'name': 'Question-Led',
+            'description': """
+OPENING: Start with a provocative question
+STRUCTURE: Question → Exploration → Multiple perspectives → Your take
+HOOK: Question that challenges common assumptions
+CTA: Direct question to audience for their input
+TONE: Curious, exploratory, dialogue-focused"""
+        },
+        {
+            'name': 'Listicle/Framework',
+            'description': """
+OPENING: Promise specific, actionable insights
+STRUCTURE: Numbered list or framework (3-5 points)
+HOOK: "Here are X things I learned..." or "X ways to..."
+CTA: Ask which point resonates most
+TONE: Practical, structured, educational"""
+        },
+        {
+            'name': 'Contrarian Take',
+            'description': """
+OPENING: Challenge conventional wisdom
+STRUCTURE: Common belief → Why it's wrong → Alternative view → Evidence
+HOOK: "Everyone says X, but..." or "Unpopular opinion:"
+CTA: Invite debate and different perspectives
+TONE: Bold, confident, thought-provoking"""
+        }
+    ]
+
 def load_inspiration_notes(inspiration_dir, num_notes=3):
     """Load random inspiration notes from inspiration directory"""
     import random
@@ -188,7 +238,7 @@ def load_performance_insights(examples_dir):
 
     return insights
 
-def build_manual_prompt(style_guide, topic, goal, config, insights=None, inspirations=None):
+def build_manual_prompt(style_guide, topic, goal, config, insights=None, inspirations=None, variant_style=None):
     """Build prompt for manual mode (user provides topic and goal)"""
 
     audience = config['defaults']['target_audience']
@@ -215,6 +265,13 @@ INSPIRATION NOTES (use these as creative fuel, not direct content):"""
         for insp in inspirations:
             prompt += f"""
 - {insp['content']}"""
+
+    # Add variant style instructions if A/B testing
+    if variant_style:
+        prompt += f"""
+
+VARIANT STYLE (create a unique approach for this variant):
+{variant_style}"""
 
     # Add performance insights if available
     if insights:
@@ -251,7 +308,7 @@ Format your output as:
 
     return prompt
 
-def build_context_prompt(style_guide, context_data, config, inspirations=None):
+def build_context_prompt(style_guide, context_data, config, inspirations=None, variant_style=None):
     """Build prompt for auto mode (using stored context)"""
 
     audience = config['defaults'].get('target_audience', 'professional audience')
@@ -294,6 +351,13 @@ INSPIRATION NOTES (recent observations and ideas - use as creative fuel):"""
         for insp in inspirations:
             prompt += f"""
 - {insp['content']}"""
+
+    # Add variant style instructions if A/B testing
+    if variant_style:
+        prompt += f"""
+
+VARIANT STYLE (create a unique approach for this variant):
+{variant_style}"""
 
     prompt += f"""
 
@@ -399,13 +463,23 @@ def main():
     parser.add_argument('--angle-summary', type=str,
                        help='Brief description of angle covered (used with --update-context)')
 
+    # A/B Testing variants
+    parser.add_argument('--variants', type=int, default=1,
+                       help='Number of variants to generate for A/B testing (1-5, default: 1)')
+
     args = parser.parse_args()
 
     # Validate arguments
     if args.manual and (not args.topic or not args.goal):
         parser.error("--manual mode requires both --topic and --goal")
 
+    if args.variants < 1 or args.variants > 5:
+        parser.error("--variants must be between 1 and 5")
+
     print("=== LinkedIn Post Generator ===\n")
+
+    if args.variants > 1:
+        print(f"🧪 A/B Testing Mode: Generating {args.variants} variants\n")
 
     # Load config and style guide
     config = load_config()
@@ -431,27 +505,57 @@ def main():
             print(f"   - {insp['file']}: {preview}")
         print()
 
-    # Build prompt based on mode
-    if args.manual:
-        print(f"Mode: Manual")
-        print(f"Topic: {args.topic}")
-        print(f"Goal: {args.goal}")
-        prompt = build_manual_prompt(style_guide, args.topic, args.goal, config, insights, inspirations)
-        mode = "manual"
-        identifier = args.topic.replace(" ", "_")[:30]
-    else:
-        print(f"Mode: Auto (Context)")
-        print(f"Context: {args.context}")
-        context_data = load_context(args.context, config['paths']['contexts'])
-        prompt = build_context_prompt(style_guide, context_data, config, inspirations)
-        mode = "context"
-        identifier = args.context
+    # Get variant styles if generating multiple
+    variant_styles = get_variant_styles()[:args.variants] if args.variants > 1 else [None]
 
-    # Generate post
-    draft = generate_with_claude(prompt, claude_cli)
+    # Generate variants
+    all_drafts = []
+    for variant_num, variant_style in enumerate(variant_styles, 1):
+        if args.variants > 1:
+            print(f"\n{'='*60}")
+            print(f"GENERATING VARIANT {variant_num}: {variant_style['name'] if variant_style else 'Standard'}")
+            print(f"{'='*60}")
 
-    # Save draft
-    draft_path = save_draft(draft, config['paths']['output'], mode, identifier)
+        # Build prompt based on mode
+        if args.manual:
+            if variant_num == 1:
+                print(f"Mode: Manual")
+                print(f"Topic: {args.topic}")
+                print(f"Goal: {args.goal}")
+            prompt = build_manual_prompt(
+                style_guide, args.topic, args.goal, config, insights, inspirations,
+                variant_style['description'] if variant_style else None
+            )
+            mode = "manual"
+            identifier = args.topic.replace(" ", "_")[:30]
+        else:
+            if variant_num == 1:
+                print(f"Mode: Auto (Context)")
+                print(f"Context: {args.context}")
+            context_data = load_context(args.context, config['paths']['contexts'])
+            prompt = build_context_prompt(
+                style_guide, context_data, config, inspirations,
+                variant_style['description'] if variant_style else None
+            )
+            mode = "context"
+            identifier = args.context
+
+        # Generate post
+        draft = generate_with_claude(prompt, claude_cli)
+
+        # Save draft with variant suffix
+        if args.variants > 1:
+            variant_identifier = f"{identifier}_variant{variant_num}"
+        else:
+            variant_identifier = identifier
+
+        draft_path = save_draft(draft, config['paths']['output'], mode, variant_identifier)
+
+        all_drafts.append({
+            'variant_name': variant_style['name'] if variant_style else 'Standard',
+            'draft': draft,
+            'path': draft_path
+        })
 
     # Update context if requested
     if args.context and args.update_context:
@@ -461,11 +565,23 @@ def main():
         else:
             print("⚠ --angle-summary required to update context")
 
-    # Display the draft
+    # Display all drafts
     print("\n" + "="*60)
-    print("GENERATED DRAFT:")
+    if args.variants > 1:
+        print("GENERATED VARIANTS:")
+    else:
+        print("GENERATED DRAFT:")
     print("="*60)
-    print(draft)
+
+    for idx, draft_info in enumerate(all_drafts, 1):
+        if args.variants > 1:
+            print(f"\n{'='*60}")
+            print(f"VARIANT {idx}: {draft_info['variant_name']}")
+            print(f"{'='*60}")
+        print(draft_info['draft'])
+        if args.variants > 1 and idx < len(all_drafts):
+            print(f"\n{'-'*60}\n")
+
     print("="*60)
 
     # Show posting recommendations
@@ -482,6 +598,13 @@ def main():
         print("   - Post and engage with comments in the first hour")
         print("   - Tag relevant people to boost initial engagement")
         print("   - Share in relevant LinkedIn groups after posting")
+
+    if args.variants > 1:
+        print(f"\n📁 All {args.variants} variants saved to output/")
+        print("\n🧪 A/B TESTING TIP:")
+        print("   - Test different variants over time to see which style performs best")
+        print("   - Track engagement for each variant style")
+        print("   - Use analyze_performance.py to identify winning patterns")
 
     print(f"\n✓ Generation complete!")
 
