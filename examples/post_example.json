@@ -1,0 +1,38 @@
+{
+  "post_id": "optional_identifier",
+  "content": "Your full LinkedIn post content goes here.\n\nIt can be multiple paragraphs.\n\nInclude everything exactly as posted.",
+  "metadata": {
+    "date": "2025-10-15",
+    "time": "09:30",
+    "timezone": "EET"
+  },
+  "engagement": {
+    "impressions": 12500,
+    "reactions": 243,
+    "comments": 18,
+    "shares": 12,
+    "clicks": 156,
+    "engagement_rate": 2.18,
+    "first_hour_reactions": 45
+  },
+  "post_characteristics": {
+    "type": "text_only",
+    "has_image": false,
+    "has_video": false,
+    "has_link": false,
+    "has_hashtags": true,
+    "hashtags": ["#AI", "#Technology"],
+    "has_emoji": false,
+    "has_list": true,
+    "has_question": true,
+    "word_count": 145,
+    "character_count": 850,
+    "line_breaks": 5
+  },
+  "context": {
+    "topic": "AI in healthcare",
+    "goal": "educate",
+    "tone": "professional"
+  },
+  "notes": "Optional notes about this post - what worked, what didn't, etc."
+}

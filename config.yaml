@@ -1,0 +1,17 @@
+# LinkedIn Post Generator Configuration
+
+# Claude CLI command (adjust if using codex or different path)
+claude_cli_command: "claude"
+
+# Default settings for post generation
+defaults:
+  target_audience: "tech professionals and industry leaders"
+  tone_guidance: "professional yet approachable"
+  max_length: 1500  # characters
+
+# Paths (relative to project root)
+paths:
+  examples: "examples"
+  contexts: "contexts"
+  output: "output"
+  style_guide: "prompts/style_guide.txt"

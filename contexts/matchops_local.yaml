@@ -1,0 +1,64 @@
+topic: MatchOps-Local - AI-Powered Development & Vibe Coding
+
+description: >
+  Content about building MatchOps-Local (a local AI coding assistant platform)
+  and the process of vibe-coding it using Cursor, Claude Code, and Codex.
+  Posts cover both the product itself and the meta-experience of building
+  software with AI agents.
+
+target_audience: Software developers, AI enthusiasts, tech founders, and people interested in AI-assisted coding
+
+themes:
+  # Product-focused themes
+  - MatchOps-Local features and capabilities
+  - How MatchOps-Local helps developers
+  - Local-first AI development benefits
+  - Privacy and control in AI coding tools
+  - Comparing MatchOps-Local to other solutions
+
+  # Building process themes
+  - Vibe coding methodology and philosophy
+  - Real development stories and breakthroughs
+  - Challenges faced while building with AI
+  - When AI coding works brilliantly
+  - When AI coding falls short and why
+
+  # AI coding assistant themes
+  - Cursor vs Claude Code vs Codex comparison
+  - Best practices for prompting AI coding assistants
+  - How to maintain code quality with AI
+  - AI-assisted refactoring and architecture
+  - Testing and debugging with AI help
+
+  # Meta/philosophical themes
+  - Future of software development with AI
+  - What "vibe coding" really means
+  - Skills developers need in the AI era
+  - Code review with AI agents
+  - Balancing human intuition with AI suggestions
+
+key_messages:
+  - Vibe coding is not careless - it's a new way of working that requires different skills
+  - AI coding assistants are tools that amplify developer capabilities, not replacements
+  - Building in public and sharing the journey helps the community learn
+  - Local-first AI development gives developers control and privacy
+  - The best results come from knowing when to trust AI and when to override it
+  - Traditional software engineering principles still matter (testing, architecture, code review)
+  - MatchOps-Local solves real problems developers face with AI coding tools
+  - Transparency about both successes and failures builds trust and credibility
+
+posting_frequency: 2-3 times per week
+
+recent_angles_covered: []
+
+notes: >
+  This context covers three interconnected areas:
+  1. MatchOps-Local as a product
+  2. The process of building it with AI
+  3. General AI coding assistant insights
+
+  Posts should often blend these areas - e.g., "Here's how I used Claude Code
+  to build this MatchOps feature, and here's what I learned about prompting."
+
+  Avoid repetitive "just shipped X" posts - always provide context, learnings,
+  or insights that add value beyond the announcement.

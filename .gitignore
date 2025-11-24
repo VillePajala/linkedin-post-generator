@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Generated files
+prompts/style_guide.txt
+output/
+examples/post_*.json
+examples/all_posts.json
+examples/*.xlsx
+
+# Personal data
+examples/*.txt
+examples/*.md
+examples/images/*.png
+examples/images/*.jpg
+inspiration/*.txt
+inspiration/*.md
+!inspiration/README.md
+!examples/README.md
+!examples/post_example.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+
+# Context files (optional - uncomment to keep private)
+# contexts/*.yaml
